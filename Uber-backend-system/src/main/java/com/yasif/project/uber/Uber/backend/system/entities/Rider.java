@@ -1,12 +1,14 @@
 package com.yasif.project.uber.Uber.backend.system.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Rider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

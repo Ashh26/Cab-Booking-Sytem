@@ -3,11 +3,26 @@ package com.yasif.project.uber.Uber.backend.system.services.Impl;
 import com.yasif.project.uber.Uber.backend.system.dto.DriverDto;
 import com.yasif.project.uber.Uber.backend.system.dto.SignupDto;
 import com.yasif.project.uber.Uber.backend.system.dto.UserDto;
+import com.yasif.project.uber.Uber.backend.system.entities.User;
+import com.yasif.project.uber.Uber.backend.system.entities.enums.Role;
+import com.yasif.project.uber.Uber.backend.system.exceptions.RuntimeConflictException;
+import com.yasif.project.uber.Uber.backend.system.repositories.UserRepository;
 import com.yasif.project.uber.Uber.backend.system.services.AuthService;
+import com.yasif.project.uber.Uber.backend.system.services.RiderService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
+@RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
+
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+    private final RiderService riderService;
+
     @Override
     public void login(String email, String password) {
 
@@ -15,7 +30,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto signup(SignupDto signupDto) {
-        return null;
+       User user = userRepository.findByEmail(signupDto.getEmail()).orElse(null);
+       if(user!=null){
+           throw new RuntimeConflictException("User already exist with email "+signupDto.getEmail());
+       }
+
+        User mapUser = modelMapper.map(signupDto,User.class);
+        mapUser.setRoles(Set.of(Role.RIDER));
+        User savedUser = userRepository.save(mapUser);
+
+        // creating user related entities
+        riderService.createNewRider(savedUser);
+
+        return modelMapper.map(savedUser,UserDto.class);
     }
 
     @Override
