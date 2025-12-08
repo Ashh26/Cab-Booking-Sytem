@@ -3,7 +3,9 @@ package com.yasif.project.uber.Uber.backend.system.entities;
 import com.yasif.project.uber.Uber.backend.system.entities.enums.PaymentMethod;
 import com.yasif.project.uber.Uber.backend.system.entities.enums.RideStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ride {
 
     @Id
@@ -20,7 +24,7 @@ public class Ride {
     private  Long id;
 
     @Column(columnDefinition = "Geometry(Point,4326)")
-    private Point pickUpLocation;
+    private Point pickupLocation;
 
     @Column(columnDefinition = "Geometry(Point,4326)")
     private Point dropOffLocation;

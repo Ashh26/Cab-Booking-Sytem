@@ -4,7 +4,7 @@ import com.yasif.project.uber.Uber.backend.system.entities.enums.RideStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.locationtech.jts.geom.Point;
+
 
 import java.time.LocalDateTime;
 
@@ -15,15 +15,15 @@ public class RideDto {
 
     private  Long id;
 
-    private Point pickUpLocation;
+    private PointDto pickupLocation;
 
-    private Point dropOffLocation;
+    private PointDto dropOffLocation;
 
     private LocalDateTime createdTime;
 
-    private RiderDto riderDto;
+    private RiderDto rider;
 
-    private DriverDto driverDto;
+    private DriverDto driver;
 
     private PaymentMethod paymentMethod;
 
