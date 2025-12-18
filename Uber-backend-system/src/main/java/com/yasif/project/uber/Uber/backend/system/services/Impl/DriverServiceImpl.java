@@ -3,10 +3,7 @@ package com.yasif.project.uber.Uber.backend.system.services.Impl;
 import com.yasif.project.uber.Uber.backend.system.dto.DriverDto;
 import com.yasif.project.uber.Uber.backend.system.dto.RideDto;
 import com.yasif.project.uber.Uber.backend.system.dto.RiderDto;
-import com.yasif.project.uber.Uber.backend.system.entities.Driver;
-import com.yasif.project.uber.Uber.backend.system.entities.Ride;
-import com.yasif.project.uber.Uber.backend.system.entities.RideRequest;
-import com.yasif.project.uber.Uber.backend.system.entities.Rider;
+import com.yasif.project.uber.Uber.backend.system.entities.*;
 import com.yasif.project.uber.Uber.backend.system.entities.enums.RideRequestStatus;
 import com.yasif.project.uber.Uber.backend.system.entities.enums.RideStatus;
 import com.yasif.project.uber.Uber.backend.system.exceptions.ResourceNotFoundException;
@@ -16,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -192,20 +190,42 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getCurrentDriver() {
-        return driverRepository.findById(2L).orElseThrow(()->new ResourceNotFoundException(
-                "Driver not found with id:"+2 ));
+
+        // Retrieves the currently authenticated user
+        // from Spring Security’s SecurityContext.
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        // Finds the Driver entity associated with the user.
+        // Throws an exception if the user is not registered as a driver.
+        return driverRepository
+                .findByUser(user)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Driver not associated with user with id:" + user.getId()
+                        )
+                );
     }
 
     @Override
     public Driver updateDriverAvailability(Driver driver, boolean available) {
-        // set the availability and save the driver
 
+        // Updates the driver's availability status.
+        // Used to mark driver as online or offline.
         driver.setAvailable(available);
+
+        // Persists the updated driver state.
         return driverRepository.save(driver);
     }
+
 
     @Override
     public Driver createNewDriver(Driver driver) {
+
+        // Saves a newly created driver entity into the database.
         return driverRepository.save(driver);
     }
 }
+

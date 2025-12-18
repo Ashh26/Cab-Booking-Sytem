@@ -3,6 +3,7 @@ package com.yasif.project.uber.Uber.backend.system.advices;
 
 import com.yasif.project.uber.Uber.backend.system.exceptions.ResourceNotFoundException;
 import com.yasif.project.uber.Uber.backend.system.exceptions.RuntimeConflictException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,14 +46,14 @@ public class GlobalExceptionHandler {
         return buildErrorResponseEntity(apiError);
     }
 
-//    @ExceptionHandler(JwtException.class)
-//    public ResponseEntity<ApiResponse<?>> handleJwtException(JwtException ex) {
-//        ApiError apiError = ApiError.builder()
-//                .status(HttpStatus.UNAUTHORIZED)
-//                .message(ex.getMessage())
-//                .build();
-//        return buildErrorResponseEntity(apiError);
-//    }
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResponse<?>> handleJwtException(JwtException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .message(ex.getMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException ex) {

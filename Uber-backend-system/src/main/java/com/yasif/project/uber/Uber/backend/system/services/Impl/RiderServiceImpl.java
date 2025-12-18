@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -138,18 +139,39 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public Rider createNewRider(User user) {
+
+        // Builds a new Rider entity linked to the given user.
+        // Initializes the rider rating to 0.0 by default.
         Rider rider = Rider.builder()
                 .user(user)
                 .rating(0.0)
                 .build();
+
+        // Saves the new rider entity to the database and returns it.
         return riderRepository.save(rider);
     }
 
+
     @Override
     public Rider getCurrentRider() {
-        return riderRepository.findById(1L).orElseThrow(()-> new ResourceNotFoundException(
-                "Rider not found with id:"+1
-        ));
+
+        // Retrieves the currently authenticated user
+        // from Spring Security’s SecurityContext.
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        // Finds the Rider entity associated with the user.
+        // Throws an exception if the user is not registered as a rider.
+        return riderRepository
+                .findByUser(user)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Rider not associated with user with id:" + user.getId()
+                        )
+                );
     }
+
 
 }
